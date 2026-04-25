@@ -2,6 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Inputingredients from "./pages/input_ingredient ";
 import SearchResults from "./pages/SearchResults";
+import RecipeDetails from "./pages/RecipeDetails";
+import About from "./pages/AboutUs";
+import Contact from "./pages/Contact";
+
 
 
 export default function App() {
@@ -10,6 +14,10 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/input-ingredient" element={<Inputingredients />} />
       <Route path="/search-results" element={<SearchResults />} />
+      <Route path="/recipe/:id" element={<RecipeDetails />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+
     </Routes>
   );
 }
