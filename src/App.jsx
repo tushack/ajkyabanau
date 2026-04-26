@@ -5,6 +5,7 @@ import SearchResults from "./pages/SearchResults";
 import RecipeDetails from "./pages/RecipeDetails";
 import About from "./pages/AboutUs";
 import Contact from "./pages/Contact";
+import BrowseCollections from "./pages/BrowseCollections";
 
 
 
@@ -17,7 +18,8 @@ export default function App() {
       <Route path="/recipe/:id" element={<RecipeDetails />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
-
+      <Route path="/browse-collections" element={<BrowseCollections />} />
+    
     </Routes>
   );
 }

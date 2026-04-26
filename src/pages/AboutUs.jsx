@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import AppHeader from "../pages/AppHeader";
+import AuthPopup from "../pages/AuthPopup";
 
 
 function MenuIcon() {
@@ -65,11 +66,14 @@ export default function About() {
     { value: "Easy", label: "Cooking Guidance" },
     { value: "Daily", label: "Kitchen Inspiration" },
   ];
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f8f8f8] text-[#111827]">
-      <AppHeader active="about" />
-
+      <AppHeader
+        active="about"
+        onAuthClick={() => setShowAuthPopup(true)}
+      />
       <main>
         <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
           <div className="overflow-hidden rounded-[32px] border border-[#efdfc8] bg-gradient-to-br from-[#fffaf2] via-[#fff8ef] to-[#fdf0dc] shadow-sm">
@@ -215,6 +219,10 @@ export default function About() {
           </div>
         </section>
       </main>
+      <AuthPopup
+        open={showAuthPopup}
+        onClose={() => setShowAuthPopup(false)}
+      />
     </div>
   );
 }

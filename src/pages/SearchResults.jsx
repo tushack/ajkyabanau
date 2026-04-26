@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+import AppFlowHeader from "../pages/AppRecipeHeader";
 import {
   LANGUAGE_OPTIONS,
   getSavedLanguage,
@@ -721,179 +722,18 @@ export default function SearchResults() {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] text-[#0f172a]">
-      <header className="border-b border-[#eee2cf] bg-[#fbfaf7]">
-        <div className="mx-auto max-w-7xl px-4 py-4 lg:px-10">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Aj Kya banega" className="h-12 w-12 rounded-full object-cover" />
-              <h1 className="text-[20px] font-bold">Aj Kya Banega</h1>
-            </div>
-
-            <nav className="hidden items-center gap-9 md:flex">
-              <button
-                onClick={() => navigate("/")}
-                className="text-[16px] text-[#334155]"
-              >
-                {t("home")}
-              </button>
-
-              <button
-                onClick={() => navigate("/search-results")}
-                className={`text-[16px] ${activeTab === "browse"
-                  ? "font-medium text-[#ef9f24]"
-                  : "text-[#334155]"
-                  }`}
-              >
-                {t("recipes")}
-              </button>
-
-              <button
-                onClick={() => navigate("/search-results?tab=favorites")}
-                className={`text-[16px] ${activeTab === "favorites"
-                  ? "font-medium text-[#ef9f24]"
-                  : "text-[#334155]"
-                  }`}
-              >
-                {t("myKitchen")}
-              </button>
-
-              {/* <button
-                onClick={() => navigate("/search-results?tab=mykitchen")}
-                className={`text-[16px] ${activeTab === "mykitchen"
-                  ? "font-medium text-[#ef9f24]"
-                  : "text-[#334155]"
-                  }`}
-              >
-                {t("myKitchen")}
-              </button> */}
-            </nav>
-
-            <div className="hidden items-center gap-4 md:flex">
-              <div className="hidden items-center gap-3 rounded-full border border-[#eee2cf] bg-white px-4 py-3 lg:flex lg:w-[230px]">
-                <SearchIcon />
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder={t("searchRecipes")}
-                  className="w-full bg-transparent text-[14px] text-[#475569] outline-none placeholder:text-[#94a3b8]"
-                />
-              </div>
-
-              <div className="hidden md:flex items-center gap-3">
-                <span className="text-[13px] font-medium text-[#475569]">
-                  {t("language")}
-                </span>
-
-                <div className="rounded-full border border-[#eee2cf] bg-white px-4 py-3">
-                  <select
-                    value={language}
-                    onChange={handleLanguageChange}
-                    className="bg-transparent text-[13px] font-medium text-[#111827] outline-none"
-                  >
-                    {LANGUAGE_OPTIONS.map((item) => (
-                      <option key={item.code} value={item.code}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-[#eee2cf] bg-[#f8efe2] text-[#a16207]">
-                👤
-                {favoriteIds.length > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#ef9f24] px-1 text-[11px] font-bold text-white">
-                    {favoriteIds.length}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[#eee2cf] bg-white text-[#334155] md:hidden"
-            >
-              {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
-          </div>
-
-          <div className="mt-4 flex justify-center md:hidden">
-            <div className="flex w-full max-w-[520px] items-center gap-3 rounded-full border border-[#eee2cf] bg-white px-4 py-3">
-              <SearchIcon />
-              <input
-                type="text"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder={t("searchRecipes")}
-                className="w-full bg-transparent text-[14px] text-[#475569] outline-none placeholder:text-[#94a3b8]"
-              />
-            </div>
-          </div>
-
-          {mobileMenuOpen && (
-            <div className="mt-4 rounded-[22px] border border-[#eee2cf] bg-white p-4 shadow-sm md:hidden">
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/");
-                  }}
-                  className="rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[#334155] hover:bg-[#faf4ea]"
-                >
-                  {t("home")}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/search-results");
-                  }}
-                  className="rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[#334155] hover:bg-[#faf4ea]"
-                >
-                  {t("recipes")}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/search-results?tab=favorites");
-                  }}
-                  className="rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[#334155] hover:bg-[#faf4ea]"
-                >
-                  {t("myKitchen")}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/search-results?tab=mykitchen");
-                  }}
-                  className="rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[#334155] hover:bg-[#faf4ea]"
-                >
-                  {t("myKitchen")}
-                </button>
-
-                <div className="mt-2 rounded-2xl border border-[#eee2cf] bg-[#fbfaf7] px-4 py-3">
-                  <div className="mb-2 text-[13px] font-medium text-[#475569]">
-                    {t("language")}
-                  </div>
-                  <select
-                    value={language}
-                    onChange={handleLanguageChange}
-                    className="w-full rounded-xl border border-[#eee2cf] bg-white px-3 py-3 text-[14px] font-medium text-[#111827] outline-none"
-                  >
-                    {LANGUAGE_OPTIONS.map((item) => (
-                      <option key={item.code} value={item.code}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <AppFlowHeader
+        t={t}
+        language={language}
+        onLanguageChange={handleLanguageChange}
+        active={activeTab === "browse" ? "recipes" : "saved"}
+        showSearch={true}
+        searchText={searchText}
+        onSearchChange={setSearchText}
+        recipesPath="/search-results"
+        savedPath="/search-results?tab=favorites"
+        savedLabel={t("myKitchen")}
+      />
 
       <main className="mx-auto max-w-7xl px-6 py-8 lg:px-10">
         <div className="mb-5 flex items-center gap-3 text-[14px] text-[#64748b]">

@@ -4,6 +4,7 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import logo from "../assets/logo.png";
 import AppHeader from "../pages/AppHeader";
 import { db } from "../lib/firebase";
+import AuthPopup from "../pages/AuthPopup";
 
 function MenuIcon() {
   return (
@@ -48,6 +49,7 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,58 +60,59 @@ export default function Contact() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const name = formData.name.trim();
-  const email = formData.email.trim();
-  const subject = formData.subject.trim();
-  const message = formData.message.trim();
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const subject = formData.subject.trim();
+    const message = formData.message.trim();
 
-  if (!name || !email || !subject || !message) {
-    setErrorMessage("Please fill all fields before sending your message.");
-    setSuccessMessage("");
-    return;
-  }
+    if (!name || !email || !subject || !message) {
+      setErrorMessage("Please fill all fields before sending your message.");
+      setSuccessMessage("");
+      return;
+    }
 
-  try {
-    setSubmitting(true);
-    setErrorMessage("");
-    setSuccessMessage("");
+    try {
+      setSubmitting(true);
+      setErrorMessage("");
+      setSuccessMessage("");
 
-    await addDoc(collection(db, "contactMessages"), {
-      name,
-      email,
-      subject,
-      message,
-      createdAt: serverTimestamp(),
-    });
+      await addDoc(collection(db, "contactMessages"), {
+        name,
+        email,
+        subject,
+        message,
+        createdAt: serverTimestamp(),
+      });
 
-    setSuccessMessage("Your message has been sent successfully.");
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-} catch (error) {
-  console.error("Firestore submit error:", error);
-  console.error("Error code:", error?.code);
-  console.error("Error message:", error?.message);
+      setSuccessMessage("Your message has been sent successfully.");
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Firestore submit error:", error);
+      console.error("Error code:", error?.code);
+      console.error("Error message:", error?.message);
 
-  setErrorMessage(
-    `${error?.code || "unknown-error"} : ${
-      error?.message || "Failed to send message. Please try again."
-    }`
-  );
-} finally {
-    setSubmitting(false);
-  }
-};
+      setErrorMessage(
+        `${error?.code || "unknown-error"} : ${error?.message || "Failed to send message. Please try again."
+        }`
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f6f2eb] text-[#161616]">
-     <AppHeader active="contact" />
-
+      <AppHeader
+        active="contact"
+        onAuthClick={() => setShowAuthPopup(true)}
+      />
       <main className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
         <div className="grid gap-10 xl:grid-cols-[0.9fr_1.1fr]">
           <section className="flex flex-col justify-between">
@@ -156,8 +159,8 @@ export default function Contact() {
           </section>
 
           <section className="rounded-[36px] bg-white/70 p-6 shadow-sm ring-1 ring-[#ece4d8] backdrop-blur sm:p-8 lg:p-10">
-        <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="grid gap-6 md:grid-cols-2">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.2em] text-[#a86800]">
                     Name
@@ -214,24 +217,24 @@ export default function Contact() {
                   className="w-full resize-none border border-[#e7ddd0] bg-[#fcfbf8] px-5 py-5 text-[18px] text-[#161616] outline-none placeholder:text-[#c2b7aa] focus:border-[#b87b1c]"
                 />
               </div>
-        {successMessage && (
-  <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-[15px] font-medium text-green-700">
-    {successMessage}
-  </div>
-)}
+              {successMessage && (
+                <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-[15px] font-medium text-green-700">
+                  {successMessage}
+                </div>
+              )}
 
-{errorMessage && (
-  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] font-medium text-red-700">
-    {errorMessage}
-  </div>
-)}
-                    <button
-        type="submit"
-        disabled={submitting}
-        className="rounded-full bg-[#a86800] px-10 py-5 text-[18px] font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-        {submitting ? "Sending..." : "Send Message"}
-        </button>
+              {errorMessage && (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] font-medium text-red-700">
+                  {errorMessage}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="rounded-full bg-[#a86800] px-10 py-5 text-[18px] font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? "Sending..." : "Send Message"}
+              </button>
 
               <div className="border-t border-[#e7ddd0] pt-8">
                 <div className="grid gap-8 sm:grid-cols-2">
@@ -266,6 +269,10 @@ export default function Contact() {
           </section>
         </div>
       </main>
+      <AuthPopup
+        open={showAuthPopup}
+        onClose={() => setShowAuthPopup(false)}
+      />
     </div>
   );
 }

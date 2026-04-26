@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
 import { fetchAiRecipes } from "../lib/recipeApi";
 import logo from "../assets/logo.png";
 
@@ -54,6 +56,9 @@ export default function Inputingredients() {
   const navigate = useNavigate();
   const [loadingRecipes, setLoadingRecipes] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
 
   const looksLikeRecipeQuery = (value) => {
     const text = value.trim().toLowerCase();
@@ -146,15 +151,60 @@ export default function Inputingredients() {
     setLanguageState(nextLanguage);
     setSavedLanguage(nextLanguage);
   };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const homeTarget = currentUser ? "/input-ingredient" : "/";
+
+  const getUserInitial = () => {
+    const name = currentUser?.displayName?.trim();
+    if (name) return name.charAt(0).toUpperCase();
+
+    const email = currentUser?.email?.trim();
+    if (email) return email.charAt(0).toUpperCase();
+
+    return "U";
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setProfileMenuOpen(false);
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] text-[#0d1830]">
       <header className="border-b border-[#e9dcc8] bg-[#f8f7f4]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-12">
           <div className="flex items-center gap-3">
-              <img src={logo} alt="RecipeHub" className="h-12 w-12 rounded-full object-cover" />
+            <img src={logo} alt="RecipeHub" className="h-12 w-12 rounded-full object-cover" />
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate(homeTarget)}
               className="text-[18px] sm:text-[24px] font-bold text-[#111827]"
             >
               Aj Kya Banega
@@ -162,7 +212,10 @@ export default function Inputingredients() {
           </div>
 
           <nav className="hidden md:flex items-center gap-10 text-[16px] font-medium text-[#111827]">
-            <button onClick={() => navigate("/")} className="hover:text-[#eb9f25]">
+            <button
+              onClick={() => navigate(homeTarget)}
+              className="hover:text-[#eb9f25]"
+            >
               {t("home")}
             </button>
             <button
@@ -197,13 +250,70 @@ export default function Inputingredients() {
                 ))}
               </select>
             </div>
+            <div className="relative" ref={profileMenuRef}>
+              <button
+                onClick={() => setProfileMenuOpen((prev) => !prev)}
+                className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[#ead8c0] bg-[#efc7ae] shadow-sm"
+              >
+                {currentUser?.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt={currentUser.displayName || "User"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-[16px] font-semibold text-[#111827]">
+                    {getUserInitial()}
+                  </span>
+                )}
+              </button>
 
-            <button
-              onClick={() => navigate("/search-results?tab=favorites")}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#efc7ae] text-[18px]"
-            >
-              📄
-            </button>
+              {profileMenuOpen && (
+                <div className="absolute right-0 top-14 z-50 w-64 rounded-2xl border border-[#ead8c0] bg-white p-3 shadow-xl">
+                  <div className="flex items-center gap-3 rounded-xl bg-[#fbfaf7] px-3 py-3">
+                    {currentUser?.photoURL ? (
+                      <img
+                        src={currentUser.photoURL}
+                        alt={currentUser.displayName || "User"}
+                        className="h-11 w-11 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#efc7ae] text-[15px] font-semibold text-[#111827]">
+                        {getUserInitial()}
+                      </div>
+                    )}
+
+                    <div className="min-w-0">
+                      <p className="truncate text-[14px] font-semibold text-[#111827]">
+                        {currentUser?.displayName || "Guest User"}
+                      </p>
+                      <p className="truncate text-[12px] text-[#64748b]">
+                        {currentUser?.email || "Not signed in"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {currentUser ? (
+                    <button
+                      onClick={handleLogout}
+                      className="mt-3 w-full rounded-xl bg-[#111827] px-4 py-3 text-left text-[14px] font-medium text-white"
+                    >
+                      Sign Out
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        navigate(homeTarget);
+                      }}
+                      className="mt-3 w-full rounded-xl border border-[#ead8c0] px-4 py-3 text-left text-[14px] font-medium text-[#111827]"
+                    >
+                      Go to Home
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <button
@@ -220,7 +330,7 @@ export default function Inputingredients() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  navigate("/");
+                  navigate(homeTarget);
                 }}
                 className="rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[#111827] hover:bg-[#faf4ea]"
               >
@@ -263,64 +373,22 @@ export default function Inputingredients() {
                   ))}
                 </select>
               </div>
+              {currentUser && (
+                <button
+                  onClick={async () => {
+                    setMobileMenuOpen(false);
+                    await handleLogout();
+                  }}
+                  className="rounded-xl bg-[#111827] px-4 py-3 text-left text-[15px] font-medium text-white"
+                >
+                  Sign Out
+                </button>
+              )}
             </div>
           </div>
         )}
       </header>
-      {/* <header className="border-b border-[#e9dcc8] bg-[#f8f7f4]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-12">
-          <div className="flex items-center gap-3">
-            <div className="text-[#eb9f25] text-3xl">🍴</div>
-            <h1 className="text-[20px] sm:text-[24px] font-bold text-[#111827]">
-              RecipeFinder
-            </h1>
-          </div>
 
-          <nav className="hidden md:flex items-center gap-10 text-[16px] font-medium text-[#111827]">
-            <button onClick={() => navigate("/")} className="hover:text-[#eb9f25]">
-              {t("home")}
-            </button>
-            <button
-              onClick={() => navigate("/search-results")}
-              className="hover:text-[#eb9f25]"
-            >
-              {t("recipes")}
-            </button>
-            <button
-              onClick={() => navigate("/search-results?tab=favorites")}
-              className="hover:text-[#eb9f25]"
-            >
-              {t("saved")}
-            </button>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 rounded-full border border-[#ead8c0] bg-white px-4 py-3">
-              <span className="text-[14px] font-medium text-[#475569]">
-                {t("language")}
-              </span>
-              <select
-                value={language}
-                onChange={handleLanguageChange}
-                className="bg-transparent text-[14px] font-medium text-[#111827] outline-none"
-              >
-                {LANGUAGE_OPTIONS.map((item) => (
-                  <option key={item.code} value={item.code}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={() => navigate("/search-results?tab=favorites")}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#efc7ae] text-[18px]"
-            >
-              📄
-            </button>
-          </div>
-        </div>
-      </header> */}
 
       <main className="mx-auto max-w-5xl px-6 py-12 lg:px-8">
         <section>

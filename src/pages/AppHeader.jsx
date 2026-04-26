@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
 
 function MenuIcon() {
   return (
@@ -35,6 +37,18 @@ function CloseIcon() {
 
 export default function AppHeader({ active = "home", onAuthClick }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const homeTarget = currentUser ? "/input-ingredient" : "/";
 
   const navClass = (page) =>
     active === page
@@ -56,13 +70,13 @@ export default function AppHeader({ active = "home", onAuthClick }) {
               alt="Aj Kya Banega"
               className="h-12 w-12 rounded-full object-cover"
             />
-            <Link to="/" className="text-2xl font-bold">
-              Aj Kya banega
+            <Link to={homeTarget} className="text-2xl font-bold">
+              Aj Kya Banega
             </Link>
           </div>
 
           <nav className="hidden md:flex items-center gap-10 font-medium">
-            <Link to="/" className={navClass("home")}>
+            <Link to={homeTarget} className={navClass("home")}>
               Home
             </Link>
             <Link to="/about" className={navClass("about")}>
@@ -101,7 +115,7 @@ export default function AppHeader({ active = "home", onAuthClick }) {
           <div className="mt-4 rounded-[22px] border border-[#e8dcc8] bg-white p-4 shadow-sm md:hidden">
             <div className="flex flex-col gap-2">
               <Link
-                to="/"
+                to={homeTarget}
                 className={mobileNavClass("home")}
                 onClick={() => setMobileMenuOpen(false)}
               >
