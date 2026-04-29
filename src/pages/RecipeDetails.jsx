@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AppFlowHeader from "../pages/AppRecipeHeader";
+import AppFooter from "../pages/AppFooter";
 
 import {
   LANGUAGE_OPTIONS,
@@ -829,8 +830,9 @@ export default function RecipeDetails() {
           </aside>
         </section>
       </main>
+      <AppFooter />
 
-      <footer className="mt-20 border-t border-[#ebe4d8] bg-[#f9f6f1]">
+      {/* <footer className="mt-20 border-t border-[#ebe4d8] bg-[#f9f6f1]">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 md:flex-row md:items-end md:justify-between">
           <div>
             <h4 className="text-[26px] font-semibold text-[#1d1d1d]">
@@ -848,7 +850,7 @@ export default function RecipeDetails() {
             <button>{tx("careers")}</button>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppFlowHeader from "../pages/AppRecipeHeader";
+import AppFooter from "../pages/AppFooter";
+
 import {
   LANGUAGE_OPTIONS,
   getSavedLanguage,
@@ -9,6 +11,8 @@ import {
   setSavedLanguage,
 } from "../lib/language";
 import logo from "../assets/logo.png";
+
+
 
 
 const extraTranslations = {
@@ -736,11 +740,11 @@ export default function SearchResults() {
       />
 
       <main className="mx-auto max-w-7xl px-6 py-8 lg:px-10">
-        <div className="mb-5 flex items-center gap-3 text-[14px] text-[#64748b]">
+        {/* <div className="mb-5 flex items-center gap-3 text-[14px] text-[#64748b]">
           <span>{t("home")}</span>
           <span>›</span>
           <span className="text-[#334155]">{breadcrumbLabel}</span>
-        </div>
+        </div> */}
 
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -948,7 +952,8 @@ export default function SearchResults() {
           </section>
         </div>
       </main>
-
+      <AppFooter />
+{/* 
       <footer className="mt-20 border-t border-[#eee2cf] bg-[#fbfaf7]">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 md:grid-cols-2 lg:grid-cols-4 lg:px-10">
           <div>
@@ -997,7 +1002,7 @@ export default function SearchResults() {
         <div className="mx-auto max-w-7xl border-t border-[#edf0f4] px-6 py-6 text-center text-[14px] text-[#94a3b8] lg:px-10">
           {tx("footerRights")}
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

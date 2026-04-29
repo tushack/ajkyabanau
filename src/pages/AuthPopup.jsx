@@ -45,7 +45,7 @@ export default function AuthPopup({ open, onClose }) {
       navigate("/input-ingredient");
     } catch (error) {
       console.error("Google sign-in error:", error);
-      alert(error?.message || "Google sign-in failed");
+      // alert(error?.message || "Google sign-in failed");
     }
   };
 

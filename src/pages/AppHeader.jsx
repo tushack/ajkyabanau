@@ -88,18 +88,12 @@ export default function AppHeader({ active = "home", onAuthClick }) {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => onAuthClick?.()}
-              className="font-semibold"
-            >
-              Log In
-            </button>
-
+          
             <button
               onClick={() => onAuthClick?.()}
               className="rounded-full bg-[#efa62b] px-6 py-3 font-semibold text-black"
             >
-              Sign Up
+              Join
             </button>
           </div>
 

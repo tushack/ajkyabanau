@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import AppHeader from "../pages/AppHeader";
 import AuthPopup from "../pages/AuthPopup";
+import AppFooter from "../pages/AppFooter";
 
 
 function MenuIcon() {
@@ -219,6 +220,8 @@ export default function About() {
           </div>
         </section>
       </main>
+
+      <AppFooter active="about" />
       <AuthPopup
         open={showAuthPopup}
         onClose={() => setShowAuthPopup(false)}

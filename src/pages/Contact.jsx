@@ -5,6 +5,7 @@ import logo from "../assets/logo.png";
 import AppHeader from "../pages/AppHeader";
 import { db } from "../lib/firebase";
 import AuthPopup from "../pages/AuthPopup";
+import AppFooter from "../pages/AppFooter";
 
 function MenuIcon() {
   return (
@@ -269,6 +270,8 @@ export default function Contact() {
           </section>
         </div>
       </main>
+
+      <AppFooter active="contact" />
       <AuthPopup
         open={showAuthPopup}
         onClose={() => setShowAuthPopup(false)}

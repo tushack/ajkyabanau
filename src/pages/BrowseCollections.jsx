@@ -5,6 +5,7 @@ import AppHeader from "../pages/AppHeader";
 import AuthPopup from "../pages/AuthPopup";
 import { FiBookmark } from "react-icons/fi";
 import { db } from "../lib/firebase";
+import AppFooter from "../pages/AppFooter";
 
 function SearchIcon() {
   return (
@@ -259,6 +260,7 @@ export default function BrowseCollections() {
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [itemsError, setItemsError] = useState("");
+  const [visibleCount, setVisibleCount] = useState(5);
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -271,6 +273,10 @@ export default function BrowseCollections() {
         (item.tag || "").toLowerCase().includes(query)
     );
   }, [search, items]);
+
+  const visibleItems = useMemo(() => {
+    return filteredItems.slice(0, visibleCount);
+  }, [filteredItems, visibleCount]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -295,6 +301,10 @@ export default function BrowseCollections() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setVisibleCount(5);
+  }, [search, items, view]);
 
   const openRecipe = (item) => {
     localStorage.setItem("recipehub_selected_recipe", JSON.stringify(item));
@@ -378,24 +388,29 @@ export default function BrowseCollections() {
             </div>
           ) : view === "list" ? (
             <div className="space-y-7">
-              {filteredItems.map((item) => (
+              {visibleItems.map((item) => (
                 <ListCard key={item.id} item={item} onOpen={openRecipe} />
               ))}
             </div>
           ) : (
             <div className="grid gap-7 md:grid-cols-2">
-              {filteredItems.map((item) => (
+              {visibleItems.map((item) => (
                 <GridCard key={item.id} item={item} onOpen={openRecipe} />
               ))}
             </div>
           )}
         </div>
 
-        <div className="mt-16 flex justify-center">
-          <button className="rounded-full border border-[#9c5f0c] px-10 py-4 text-[18px] font-medium text-[#9c5f0c] transition hover:bg-[#9c5f0c] hover:text-white">
-            Load More Discoveries
-          </button>
-        </div>
+        {filteredItems.length > 5 && visibleCount < filteredItems.length && (
+          <div className="mt-16 flex justify-center">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 5)}
+              className="rounded-full border border-[#9c5f0c] px-10 py-4 text-[18px] font-medium text-[#9c5f0c] transition hover:bg-[#9c5f0c] hover:text-white"
+            >
+              Load More Discoveries
+            </button>
+          </div>
+        )}
       </main>
 
       <AuthPopup
@@ -404,23 +419,7 @@ export default function BrowseCollections() {
       />
 
       {/* Footer */}
-      <footer className="mt-20 border-t border-[#ece4d8] bg-[#f5f1ea]">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 py-12 text-[#2a2623] lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div>
-            <h3 className="text-[16px] font-semibold">The Digital Epicurean</h3>
-            <p className="mt-3 text-[13px] uppercase tracking-[0.14em] text-[#6e6359]">
-              © 2024 The Digital Epicurean. An editorial culinary experience.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-8 text-[14px] uppercase tracking-[0.12em] text-[#4d433b]">
-            <button>About Us</button>
-            <button>Terms of Service</button>
-            <button>Privacy</button>
-            <button>Contact</button>
-          </div>
-        </div>
-      </footer>
+    <AppFooter />
     </div>
   );
 }

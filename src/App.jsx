@@ -6,6 +6,8 @@ import RecipeDetails from "./pages/RecipeDetails";
 import About from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import BrowseCollections from "./pages/BrowseCollections";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 
 
@@ -19,6 +21,8 @@ export default function App() {
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/browse-collections" element={<BrowseCollections />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-of-service" element={<TermsOfService />} />
     
     </Routes>
   );

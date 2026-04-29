@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { fetchAiRecipes } from "../lib/recipeApi";
 import logo from "../assets/logo.png";
+import RecipeLoader from "../pages/RecipeLoader";
 
 import {
   LANGUAGE_OPTIONS,
@@ -199,6 +200,11 @@ export default function Inputingredients() {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] text-[#0d1830]">
+      {loadingRecipes && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/5 backdrop-blur-md">
+          <RecipeLoader />
+        </div>
+      )}
       <header className="border-b border-[#e9dcc8] bg-[#f8f7f4]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-12">
           <div className="flex items-center gap-3">
