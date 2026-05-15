@@ -96,11 +96,19 @@ export default function Inputingredients() {
       setLoadingRecipes(true);
 
       const queryMode = looksLikeRecipeQuery(typedText);
+      const requestPayload = {
+        ingredients: queryMode ? [] : ingredients,
+        queryText: queryMode ? typedText : "",
+      };
+
+      localStorage.setItem(
+        "recipehub_last_request",
+        JSON.stringify(requestPayload)
+      );
 
       const data = await fetchAiRecipes({
-        ingredients: queryMode ? [] : ingredients,
+        ...requestPayload,
         language,
-        queryText: queryMode ? typedText : "",
       });
 
       localStorage.setItem(

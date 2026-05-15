@@ -88,7 +88,7 @@ export default function AppHeader({ active = "home", onAuthClick }) {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-          
+
             <button
               onClick={() => onAuthClick?.()}
               className="rounded-full bg-[#efa62b] px-6 py-3 font-semibold text-black"
@@ -132,25 +132,15 @@ export default function AppHeader({ active = "home", onAuthClick }) {
                 Contact
               </Link>
 
-              <div className="mt-2 grid grid-cols-2 gap-3">
+              <div className="mt-2">
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     onAuthClick?.();
                   }}
-                  className="rounded-full border border-[#e8dcc8] px-4 py-3 text-center font-semibold"
+                  className="w-full rounded-full bg-[#efa62b] px-4 py-3 text-center font-semibold text-black"
                 >
-                  Log In
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onAuthClick?.();
-                  }}
-                  className="rounded-full bg-[#efa62b] px-4 py-3 text-center font-semibold text-black"
-                >
-                  Sign Up
+                  Join
                 </button>
               </div>
             </div>

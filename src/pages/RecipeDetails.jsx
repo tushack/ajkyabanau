@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AppFlowHeader from "../pages/AppRecipeHeader";
 import AppFooter from "../pages/AppFooter";
+import { refetchRecipesForLanguage } from "../lib/recipeApi";
 
 import {
   LANGUAGE_OPTIONS,
@@ -335,13 +336,36 @@ export default function RecipeDetails() {
     return map[value] || value;
   };
 
-  const handleLanguageChange = (e) => {
+  const handleLanguageChange = async (e) => {
     const nextLanguage = e.target.value;
     setLanguageState(nextLanguage);
     setSavedLanguage(nextLanguage);
+
+    try {
+      const updatedRecipes = await refetchRecipesForLanguage(nextLanguage);
+
+      if (Array.isArray(updatedRecipes)) {
+        setAllRecipes(updatedRecipes);
+
+        const updatedCurrent = updatedRecipes.find(
+          (item) => String(item.id) === String(id)
+        );
+
+        if (updatedCurrent) {
+          setRecipe(updatedCurrent);
+          localStorage.setItem(
+            "recipehub_selected_recipe",
+            JSON.stringify(updatedCurrent)
+          );
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     try {
       const storedSelected = localStorage.getItem("recipehub_selected_recipe");
       const selected = storedSelected ? JSON.parse(storedSelected) : null;
@@ -745,18 +769,24 @@ export default function RecipeDetails() {
                 <h3 className="text-[44px] font-bold tracking-[-0.04em] text-[#111111]">
                   {t("youMightAlsoLike")}
                 </h3>
-
+{/* 
                 <button className="text-[14px] font-medium text-[#8b3d00]">
                   {tx("viewAll")} {categoryLabel(recipe.category || t("recipes"))} →
-                </button>
+                </button> */}
               </div>
 
               <div className="grid gap-6 md:grid-cols-3">
                 {relatedRecipes.map((item) => (
-                  <button
+                  <Link
                     key={item.id}
-                    onClick={() => openRelatedRecipe(item)}
-                    className="text-left"
+                    to={`/recipe/${item.id}`}
+                    onClick={() =>
+                      localStorage.setItem(
+                        "recipehub_selected_recipe",
+                        JSON.stringify(item)
+                      )
+                    }
+                    className="block text-left"
                   >
                     <div className="overflow-hidden rounded-[14px] bg-white">
                       <img
@@ -780,7 +810,7 @@ export default function RecipeDetails() {
                         ? item.dietary.map(dietaryLabel).join(" • ")
                         : tx("comfortFood")}
                     </p>
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -832,25 +862,6 @@ export default function RecipeDetails() {
       </main>
       <AppFooter />
 
-      {/* <footer className="mt-20 border-t border-[#ebe4d8] bg-[#f9f6f1]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h4 className="text-[26px] font-semibold text-[#1d1d1d]">
-              The Digital Epicurean
-            </h4>
-            <p className="mt-2 text-[14px] text-[#7d776f]">
-              {tx("footerRights")}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 text-[13px] text-[#6e675e]">
-            <button>{tx("privacyPolicy")}</button>
-            <button>{tx("termsOfService")}</button>
-            <button>{tx("contact")}</button>
-            <button>{tx("careers")}</button>
-          </div>
-        </div>
-      </footer> */}
     </div>
   );
 }

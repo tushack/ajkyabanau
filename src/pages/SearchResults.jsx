@@ -3,6 +3,7 @@ import { FaHeart } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppFlowHeader from "../pages/AppRecipeHeader";
 import AppFooter from "../pages/AppFooter";
+import { refetchRecipesForLanguage } from "../lib/recipeApi";
 
 import {
   LANGUAGE_OPTIONS,
@@ -587,10 +588,25 @@ export default function SearchResults() {
     setActiveTab(getTabFromQuery(location.search));
   }, [location.search]);
 
-  const handleLanguageChange = (e) => {
+  const handleLanguageChange = async (e) => {
     const nextLanguage = e.target.value;
     setLanguageState(nextLanguage);
     setSavedLanguage(nextLanguage);
+
+    try {
+      setLoading(true);
+      setApiError("");
+
+      const updatedRecipes = await refetchRecipesForLanguage(nextLanguage);
+      if (Array.isArray(updatedRecipes)) {
+        setRecipes(updatedRecipes);
+      }
+    } catch (error) {
+      console.error(error);
+      setApiError("failedToReadRecipeData");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -953,7 +969,7 @@ export default function SearchResults() {
         </div>
       </main>
       <AppFooter />
-{/* 
+      {/* 
       <footer className="mt-20 border-t border-[#eee2cf] bg-[#fbfaf7]">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 md:grid-cols-2 lg:grid-cols-4 lg:px-10">
           <div>
